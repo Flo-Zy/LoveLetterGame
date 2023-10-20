@@ -35,16 +35,19 @@ public class LoveLetterGame {
         try {
             LoveLetterGame game = new LoveLetterGame();
             Scanner scanner = new Scanner(System.in);
-            System.out.println("************************************************");
-            System.out.println("**********  Willkomen zu Love Letter  **********");
-            System.out.println("************************************************");
+            System.out.println("*************************************************");
+            System.out.println("**********  Willkommen zu Love Letter  **********");
+            System.out.println("*************************************************");
             Thread.sleep(1500);
+
             int numPlayers;
             do {
-                System.out.println("Wie viele Spieler möchten Spielen");
-                System.out.println("(min: 2 max: 4)");
+                System.out.println("Wie viele Spieler möchten Spielen ? (min: 2 max: 4)");
                 numPlayers = scanner.nextInt();
                 scanner.nextLine();
+                if (numPlayers < 2 || numPlayers > 4) {
+                    System.out.println("Die Anzahl der Spieler muss zwischen 2 und 4 liegen.");
+                }
             } while (numPlayers < 2 || numPlayers > 4);
 
             for (int i = 0; i < numPlayers; i++) {
@@ -62,7 +65,7 @@ public class LoveLetterGame {
                 String command = scanner.nextLine();
                 if (command.equalsIgnoreCase("\\start")) {
                     game.startGame();
-                } else if (command.equals("\\playCard")) {
+                } else if (command.equalsIgnoreCase("\\playCard")) {
                     System.out.print("Welche Karte willst du spielen ?: ");
                     String card = scanner.nextLine();
                     game.playCard(card);
@@ -80,9 +83,8 @@ public class LoveLetterGame {
                     System.out.println("Unzulässiger Befehl \\help für Befehlsliste");
                 }
             }
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
             System.out.println("Ein Fehler ist aufgetreten: " + e.getMessage());
         }
     }
-
 }
