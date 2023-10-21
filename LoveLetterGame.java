@@ -17,18 +17,22 @@ public class LoveLetterGame {
 
     public void startGame() {
         //Spiel wird gestartet
+        System.out.println("Spiel wird gestartet......");
     }
 
     public void playCard(String card) {
         //Karte wird gespielt
+        System.out.println("Karte wird gespielt......");
     }
 
     public void showHand() {
         //Spielhand wird gezeigt
+        System.out.println("Spielhand wird gezeigt......");
     }
 
     public void showScore() {
         //Zeigt den Score
+        System.out.println("Dein Score ist: ...... ");
     }
 
     public static void main(String[] args) {
