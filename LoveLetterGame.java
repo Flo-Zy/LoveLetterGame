@@ -59,12 +59,13 @@ public class LoveLetterGame {
                 String playerName = scanner.nextLine();
                 game.addPlayer(playerName);
             }
+            System.out.println("Wir können nun loslegen!!!");
             Thread.sleep(1500);
-            System.out.println("Spielbefehle: \\start (Startet das Spiel)");
+            System.out.println("Spielbefehle: ");
             System.out.println("\\start         Startet das Spiel");
             System.out.println("\\help          Zeigt dir alle möglichen Befehle");
 
-            while (true) {
+            while (true) { //While-Schleife läuft erstmal endlos
                 System.out.print("Gebe einen Spielbefehl ein: ");
                 String command = scanner.nextLine();
                 if (command.equalsIgnoreCase("\\start")) {
