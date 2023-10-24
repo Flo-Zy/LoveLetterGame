@@ -20,5 +20,15 @@ http://alderac.com/wp-content/uploads/2017/11/Love-Letter-Premium_Rulebook.pdf
     - \playCard to play a card.
     - \showHand to show the hand of the current player.
     - \showScore to show the score for each player.
+## Task definition in the second part of the preliminary project
+- If not done yet, complete your code with meaningful Javadoc comments. Use Javadoc to create detailed documentation for your project.
+  Put this documentation in the Git repository.
+- Now extend your program with the logic of the game "Love Letter". The following requirements should also be met:
+    - (a) Now implement all the game cards. Keep in mind that game cards have commonalities, which you can use to improve the structure of your program. Also, consider how to implement the card effects, since each card has a different effect.
+    - (b) Also note that some cards require you to select players or other cards.
+    - (c) You need to be able to see what happened at any time during the game, so output enough information to the console.
+    - (d) Your program should catch all possible error cases (e.g. invalid commands) and display appropriate error messages.
+    - (e) Extend your commands to include the command show players, which shows all players including a marker indicating whether the player is still active in the current round or has already been eliminated.
+- By the end of this exercise sheet, your program should be playable. Use the remaining time to test your program and fix bugs.
 ## Author
 Florian Zymeri
