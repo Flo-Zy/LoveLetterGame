@@ -30,6 +30,7 @@ class PriestCard extends Card {
 class BaronCard extends Card {
     public BaronCard() {
         super("Baron", "Compare hands; lower hand is out.");
+
     }
 }
 

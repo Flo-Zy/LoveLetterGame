@@ -1,10 +1,12 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Comparator;
 
 public class LoveLetterGame {
-    private List<Player> players;
+    private static List<Player> players;
     private int AnzahlDerPlayer;
+    private Round round;
 
     public LoveLetterGame() {
         players = new ArrayList<>();
@@ -16,11 +18,16 @@ public class LoveLetterGame {
     }
 
     public void startGame() {
+
         //Spiel wird gestartet
         System.out.println("Spiel wird gestartet......");
+        round = new Round (new Deck(), players);
+        round.startRound();
+        round.playTurn();
     }
 
     public void playCard(String card) {
+        round.playTurn();
         //Karte wird gespielt
         System.out.println("Karte wird gespielt......");
     }
@@ -28,6 +35,7 @@ public class LoveLetterGame {
     public void showHand() {
         //Spielhand wird gezeigt
         System.out.println("Spielhand wird gezeigt......");
+        //round.showCurrentPlayerHand
     }
 
     public void showScore() {
@@ -68,8 +76,14 @@ public class LoveLetterGame {
                 scanner.nextLine();
                 game.addPlayer(playerName, daysUntilLastDate);
             }
+            game.players.sort(Comparator.comparing(Player::getDaysUntilLastDate));
+            System.out.println("Reihenfolge der Spieler:");
+            for (Player player : players) {
+                System.out.println( player.getName());
+            }
             System.out.println("Wir können nun loslegen!!!");
             Thread.sleep(1500);
+
             System.out.println("Spielbefehle: ");
             System.out.println("\\start         Startet das Spiel");
             System.out.println("\\help          Zeigt dir alle möglichen Befehle");
@@ -87,12 +101,17 @@ public class LoveLetterGame {
                     game.showHand();
                 } else if (command.equalsIgnoreCase("\\showScore")) {
                     game.showScore();
+                } else if (command.equalsIgnoreCase("\\showSequence")) {
+                    for (Player player : players) {
+                        System.out.println( player.getName());
+                    }
                 } else if (command.equalsIgnoreCase("\\help")) {
                     System.out.println("Befehle:");
                     System.out.println("\\start         Spiel wird gestartet");
                     System.out.println("\\playCard      Karte wird gespielt");
                     System.out.println("\\showHand      Spielhand wird dir gezeigt");
                     System.out.println("\\showScore     Zeigt dir den Score");
+                    System.out.println("\\showSequence  Zeigt dir die Reihenfolge der Spieler");
                 } else {
                     System.out.println("Unzulässiger Befehl \\help für Befehlsliste");
                 }
