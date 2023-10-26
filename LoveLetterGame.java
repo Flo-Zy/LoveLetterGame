@@ -44,13 +44,19 @@ public class LoveLetterGame {
             System.out.println("*************************************************");
             Thread.sleep(1500);
 
+            String input;
             int numPlayers;
             do {
                 System.out.println("Wie viele Spieler möchten Spielen ? (min: 2 max: 4)");
-                numPlayers = scanner.nextInt();
-                scanner.nextLine();
-                if (numPlayers < 2 || numPlayers > 4) {
-                    System.out.println("Die Anzahl der Spieler muss zwischen 2 und 4 liegen.");
+                input = scanner.nextLine();
+                try {
+                    numPlayers = Integer.parseInt(input);
+                    if (numPlayers < 2 || numPlayers > 4) {
+                        System.out.println("Die Anzahl der Spieler muss zwischen 2 und 4 liegen.");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Ungültige Eingabe. \nBitte geben Sie eine Zahl zwischen 2 und 4 ein.");
+                    numPlayers = 0;
                 }
             } while (numPlayers < 2 || numPlayers > 4);
 
