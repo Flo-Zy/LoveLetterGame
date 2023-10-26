@@ -1,10 +1,12 @@
-public class Card {
+public abstract class Card {
     private String name;
     private String effect;
+    private int score;
 
-    public Card(String name, String effect) {
+    public Card(String name, String effect, int score) {
         this.name = name;
         this.effect = effect;
+        this.score = score;
     }
 
     public String getName() {
@@ -14,52 +16,92 @@ public class Card {
     public String getEffect() {
         return effect;
     }
+
+    public int getScore(){
+        return score;
+    }
+
+    public abstract void performEffect();
 }
 class GuardCard extends Card {
     public GuardCard() {
-        super("Guard", "Guess a player's card.");
+        super("Wächterin", "Errätst du die Handkarte eines Mitspielers, " +
+                "scheidet dieser aus. Gilt nicht für \"Wächterin\"!",1);
+    }
+    @Override
+    public void performEffect (){
+
     }
 }
 
 class PriestCard extends Card {
     public PriestCard() {
-        super("Priest", "Look at a player's hand.");
+        super("Priester", "Schaue dir die Handkarte eines Mitspielers an.",2);
+    }
+    @Override
+    public void performEffect (){
+
     }
 }
 
 class BaronCard extends Card {
     public BaronCard() {
-        super("Baron", "Compare hands; lower hand is out.");
+        super("Baron", "Vergleiche deine Handkarte mit der eines Mitspielers." +
+                "Der Spieler mit dem niedrigeren Wert scheidet aus.",3);
+    }
+    @Override
+    public void performEffect (){
 
     }
 }
 
 class HandmaidCard extends Card {
     public HandmaidCard() {
-        super("Handmaid", "Protection until your next turn.");
+        super("Zofe", "Du bist bis zu deinem nächsten Zug geschützt.",4);
+    }
+    @Override
+    public void performEffect (){
+
     }
 }
 
 class PrinceCard extends Card {
     public PrinceCard() {
-        super("Prince", "Choose a player to discard their hand.");
+        super("Prinz", "Wähle einen Spieler, der seine Handkarte ablegt und eine neue Karte zieht.",5);
+    }
+    @Override
+    public void performEffect (){
+
     }
 }
 
 class KingCard extends Card {
     public KingCard() {
-        super("King", "Trade hands with another player.");
+        super("König", "Tausche deine Handkarte mit der eines Mitspielers.",6);
+    }
+    @Override
+    public void performEffect (){
+
     }
 }
 
 class CountessCard extends Card {
     public CountessCard() {
-        super("Countess", "Discard if caught with King or Prince.");
+        super("Gräfin", "Wenn du zusätzlich König oder Prinz auf der Hand hast," +
+                "musst du die Gräfin ausspielen.",7);
+    }
+    @Override
+    public void performEffect (){
+
     }
 }
 
 class PrincessCard extends Card {
     public PrincessCard() {
-        super("Princess", "Lose if discarded.");
+        super("Prinzessin", "Wenn du die Prinzessin ablegst, scheidest du aus.",8);
+    }
+    @Override
+    public void performEffect (){
+
     }
 }
