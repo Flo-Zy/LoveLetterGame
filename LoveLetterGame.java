@@ -11,8 +11,8 @@ public class LoveLetterGame {
         AnzahlDerPlayer = 0;
     }
 
-    public void addPlayer(String name) {
-        players.add(new Player(name));
+    public void addPlayer(String name, int daysUntilLastDate) {
+        players.add(new Player(name, daysUntilLastDate));
     }
 
     public void startGame() {
@@ -63,7 +63,10 @@ public class LoveLetterGame {
             for (int i = 0; i < numPlayers; i++) {
                 System.out.print("Name von Spieler Nr." + (i + 1) + ":    ");
                 String playerName = scanner.nextLine();
-                game.addPlayer(playerName);
+                System.out.print( playerName + ", vor wie vielen Tagen hattest du dein letztes Date ? :");
+                int daysUntilLastDate = scanner.nextInt();
+                scanner.nextLine();
+                game.addPlayer(playerName, daysUntilLastDate);
             }
             System.out.println("Wir können nun loslegen!!!");
             Thread.sleep(1500);
