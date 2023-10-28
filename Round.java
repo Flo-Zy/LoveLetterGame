@@ -1,14 +1,18 @@
+import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Scanner;
 
 class Round {
     private static Deck deck;
     private static List<Player> players;
     private int currentPlayerIndex;
+    private Scanner scanner;
 
     public Round(Deck deck, List<Player> players) {
         this.deck = deck;
         this.players = players;
         currentPlayerIndex = 0;
+        scanner = new Scanner(System.in);
     }
 
     public static void startRound() {
@@ -23,33 +27,62 @@ class Round {
 
     public void playTurn() {
         Player currentPlayer = players.get(currentPlayerIndex);
-
-        // Gib die Karten in der Hand des aktuellen Spielers aus
-        System.out.println(currentPlayer.getName() + "'s Hand:");
-        List<Card> hand = currentPlayer.getHand();
-        for (int i = 0; i < hand.size(); i++) {
-            System.out.println((i + 1) + ". " + hand.get(i).getName());
+        if (currentPlayer.isProtected()) {
+            // Wenn der Spieler geschützt ist, gib eine Nachricht aus und beende seinen Zug
+            System.out.println(currentPlayer.getName() + " ist geschützt und überspringt diesen Zug.");
+            currentPlayer.setProtected(false); // Setze den Schutz-Status zurück
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+            return;
         }
 
-        // Hier folgt die Implementierung der Karten-Effekte, die spezifisch für jede Karte sind.
-        // Du kannst eine Schleife verwenden, um den Spieler auszuwählen, welche Karte er spielen möchte, und dann den entsprechenden Effekt ausführen.
-
-        // Beispiel: Spieler wählt die erste Karte (Index 0) zum Spielen
-        int chosenCardIndex = 0;
-        Card chosenCard = hand.get(chosenCardIndex);
-
-        if (chosenCard instanceof GuardCard) {
-            // Implementiere den Effekt der Guard-Karte
-        } else if (chosenCard instanceof PriestCard) {
-            // Implementiere den Effekt der Priest-Karte
-        } else if (chosenCard instanceof BaronCard) {
-            // Implementiere den Effekt der Baron-Karte
+        Card drawnCard = deck.drawCard();
+        if (drawnCard != null) {
+            currentPlayer.addToHand(drawnCard);
         }
-        // Führe für jede Karte den entsprechenden Effekt aus
 
-        // Entferne die gespielte Karte aus der Hand des Spielers
-        hand.remove(chosenCardIndex);
+        while (true) {
 
-        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+            // Ziehe eine Karte vom Nachziehstapel und füge sie der Hand des Spielers hinzu
+
+            // Gib die Karten in der Hand des aktuellen Spielers aus
+            System.out.println(currentPlayer.getName() + "'s Hand:");
+            List<Card> hand = currentPlayer.getHand();
+            for (int i = 0; i < hand.size(); i++) {
+                System.out.println((i + 1) + ". " + hand.get(i).getName());
+            }
+
+            // Lasse den Spieler eine Karte aus seiner Hand auswählen
+            System.out.print("Wähle die Nummer der Karte, die du spielen möchtest: ");
+            int chosenCardIndex;
+
+            try {
+                chosenCardIndex = scanner.nextInt();
+            } catch (InputMismatchException e) {
+                // Ungültige Eingabe (nicht numerisch)
+                System.out.println("Ungültige Eingabe. Bitte gib eine gültige Kartennummer an.");
+                scanner.nextLine(); // Leere den Scanner-Puffer
+                continue;
+                // Beende die Methode
+            }
+
+            if (chosenCardIndex < 1 || chosenCardIndex > hand.size()) {
+                System.out.println("Ungültige Auswahl. Bitte wähle eine gültige Kartennummer.");
+                continue;
+                // Beende die Methode
+            }
+
+            // Hol die ausgewählte Karte
+            Card selectedCard = hand.get(chosenCardIndex - 1);
+
+            // Führe die Aktion der ausgewählten Karte aus (performEffect)
+            selectedCard.performEffect(currentPlayer, players);
+
+            // Entferne die ausgespielte Karte aus der Hand des Spielers
+            hand.remove(chosenCardIndex - 1);
+
+            // Wechsle zum nächsten Spieler
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+            break;
+        }
     }
 }

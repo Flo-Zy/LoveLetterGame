@@ -6,6 +6,7 @@ class Player {
     private int daysUntilLastDate;
     private int score;
     private List<Card> hand;
+    private boolean isProtected;
 
     public Player(String name, int daysUntilLastDate) {
         this.name = name;
@@ -32,5 +33,13 @@ class Player {
 
     public void addToHand(Card card){
         hand.add(card);
+    }
+
+    public boolean isProtected() {
+        return isProtected;
+    }
+
+    public void setProtected(boolean protectedStatus) {
+        isProtected = protectedStatus;
     }
 }
