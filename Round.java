@@ -26,6 +26,11 @@ class Round {
     }
 
     public void playTurn() {
+        // Überprüfe, ob der Nachziehstapel leer ist
+        if (deck.isEmpty()) {
+            endRound();
+            return;
+        }
         Player currentPlayer = players.get(currentPlayerIndex);
         if (currentPlayer.isProtected()) {
             // Wenn der Spieler geschützt ist, gib eine Nachricht aus und beende seinen Zug
@@ -83,6 +88,64 @@ class Round {
             // Wechsle zum nächsten Spieler
             currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
             break;
+        }
+    }
+
+    private void endRound() {
+        // Überprüfe, wer die aktuelle Runde gewonnen hat
+        Player roundWinner = determineRoundWinner();
+        if (roundWinner != null) {
+            roundWinner.increaseScore(); // Der Gewinner erhält einen Punkt
+        }
+
+        // Zeige den Gewinner und den aktuellen Punktestand an
+        System.out.println("Runde beendet! " + roundWinner.getName() + " gewinnt diese Runde.");
+        for (Player player : players) {
+            System.out.println(player.getName() + ": " + player.getScore() + " Punkt(e)");
+        }
+
+        // Bereite die Spieler für die nächste Runde vor
+        prepareForNextRound();
+
+        // Mische die Karten und starte die nächste Runde
+        startRound();
+    }
+
+    private Player determineRoundWinner() {
+        // Hier kannst du die Logik implementieren, um den Gewinner der Runde zu bestimmen.
+        // Dazu könntest du die Kartenwerte der verbleibenden Spieler vergleichen.
+
+        // Zum Beispiel:
+        Player roundWinner = null;
+        int maxScore = 0;
+
+        for (Player player : players) {
+            int playerScore = calculatePlayerScore(player);
+            if (playerScore > maxScore) {
+                maxScore = playerScore;
+                roundWinner = player;
+            }
+        }
+
+        return roundWinner;
+    }
+
+    private int calculatePlayerScore(Player player) {
+        // Hier kannst du die Logik implementieren, um den Punktestand eines Spielers basierend auf seinen Karten zu berechnen.
+        // Du kannst die Karten in seiner Hand durchgehen und ihre Werte addieren.
+
+        int score = 0;
+        for (Card card : player.getHand()) {
+            score += card.getScore();
+        }
+
+        return score;
+    }
+
+    private void prepareForNextRound() {
+        // Hier kannst du die Spieler für die nächste Runde vorbereiten, z.B. ihre Hände leeren.
+        for (Player player : players) {
+            player.clearHand();
         }
     }
 }

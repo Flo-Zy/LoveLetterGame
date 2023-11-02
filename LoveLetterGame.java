@@ -23,10 +23,9 @@ public class LoveLetterGame {
         System.out.println("Spiel wird gestartet......");
         round = new Round (new Deck(), players);
         round.startRound();
-        round.playTurn();
     }
 
-    public void playCard(String card) {
+    public void playCard() {
         round.playTurn();
         //Karte wird gespielt
         System.out.println("Karte wird gespielt......");
@@ -53,22 +52,22 @@ public class LoveLetterGame {
             Thread.sleep(1500);
 
             String input;
-            int numPlayers;
+            int AnzahlDerPlayer;
             do {
                 System.out.println("Wie viele Spieler möchten Spielen ? (min: 2 max: 4)");
                 input = scanner.nextLine();
                 try {
-                    numPlayers = Integer.parseInt(input);
-                    if (numPlayers < 2 || numPlayers > 4) {
+                    AnzahlDerPlayer = Integer.parseInt(input);
+                    if (AnzahlDerPlayer < 2 || AnzahlDerPlayer > 4) {
                         System.out.println("Die Anzahl der Spieler muss zwischen 2 und 4 liegen.");
                     }
                 } catch (NumberFormatException e) {
                     System.out.println("Ungültige Eingabe. \nBitte geben Sie eine Zahl zwischen 2 und 4 ein.");
-                    numPlayers = 0;
+                    AnzahlDerPlayer = 0;
                 }
-            } while (numPlayers < 2 || numPlayers > 4);
+            } while (AnzahlDerPlayer < 2 || AnzahlDerPlayer > 4);
 
-            for (int i = 0; i < numPlayers; i++) {
+            for (int i = 0; i < AnzahlDerPlayer; i++) {
                 System.out.print("Name von Spieler Nr." + (i + 1) + ":    ");
                 String playerName = scanner.nextLine();
                 System.out.print( playerName + ", vor wie vielen Tagen hattest du dein letztes Date ? :");
@@ -76,7 +75,7 @@ public class LoveLetterGame {
                 scanner.nextLine();
                 game.addPlayer(playerName, daysUntilLastDate);
             }
-            game.players.sort(Comparator.comparing(Player::getDaysUntilLastDate));
+            players.sort(Comparator.comparing(Player::getDaysUntilLastDate));
             System.out.println("Reihenfolge der Spieler:");
             for (Player player : players) {
                 System.out.println( player.getName());
@@ -94,9 +93,7 @@ public class LoveLetterGame {
                 if (command.equalsIgnoreCase("\\start")) {
                     game.startGame();
                 } else if (command.equalsIgnoreCase("\\playCard")) {
-                    System.out.print("Welche Karte willst du spielen ?: ");
-                    String card = scanner.nextLine();
-                    game.playCard(card);
+                    game.playCard();
                 } else if (command.equalsIgnoreCase("\\showHand")) {
                     game.showHand();
                 } else if (command.equalsIgnoreCase("\\showScore")) {

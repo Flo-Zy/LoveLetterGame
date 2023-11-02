@@ -35,6 +35,10 @@ class Player {
         hand.add(card);
     }
 
+    public void clearHand() {
+        hand.clear();
+    }
+
     public boolean isProtected() {
         return isProtected;
     }
@@ -42,4 +46,9 @@ class Player {
     public void setProtected(boolean protectedStatus) {
         isProtected = protectedStatus;
     }
+
+    public void increaseScore() {
+        score++;
+    }
+
 }

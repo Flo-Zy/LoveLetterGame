@@ -40,6 +40,10 @@ import java.util.Collections;
         return null;
     }
 
+    public boolean isEmpty() {
+        return cards.isEmpty();
+    }
+
     public void addCard(Card card){
         cards.add(card);
     }

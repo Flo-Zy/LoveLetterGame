@@ -26,6 +26,7 @@ public abstract class Card {
 
     public abstract void performEffect(Player currentPlayer, List<Player> players);
 }
+
 class GuardCard extends Card {
     public GuardCard() {
         super("Wächterin", "Errätst du die Handkarte eines Mitspielers, " +

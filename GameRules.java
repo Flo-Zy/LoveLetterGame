@@ -2,9 +2,9 @@ import java.util.List;
 
 
 public class GameRules {
-    public static int getHeartsRequired(int numPlayers) {
+    public static int getHeartsRequired(int AnzahlDerPlayer) {
         // Bestimme die benötigte Anzahl an Herzen basierend auf der Spieleranzahl.
-        switch (numPlayers) {
+        switch (AnzahlDerPlayer) {
             case 2:
                 return 5;
             case 3:
