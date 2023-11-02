@@ -58,7 +58,9 @@ class GuardCard extends Card {
                 targetPlayer = players.get(targetPlayerNumber - 1);
 
                 // Eingabe, um die Handkarte zu erraten
-                System.out.print("Errate die Handkarte des ausgewählten Spielers (1-8): ");
+                System.out.println("1.Wächterin    2.Priester     3.Baron        4.Zofe");
+                System.out.println("5.Prinz        6.König        7.Gräfin       8.Prinzessin");
+                System.out.print("Errate die Handkarte des ausgewählten Spielers (1-8):    ");
                 guessedCard = scanner.nextInt();
 
                 // Überprüfe, ob die ausgewählte Karte gültig ist
@@ -76,6 +78,7 @@ class GuardCard extends Card {
         if (targetPlayer.getHand().get(0).getScore() == guessedCard) {
             System.out.println("Richtig erraten! " + targetPlayer.getName() + " scheidet aus.");
             players.remove(targetPlayer);
+            targetPlayer.eliminate();
         } else {
             System.out.println("Falsch geraten. " + targetPlayer.getName() + " scheidet nicht aus.");
         }
@@ -115,41 +118,45 @@ class PriestCard extends Card {
 class BaronCard extends Card {
     public BaronCard() {
         super("Baron", "Vergleiche deine Handkarte mit der eines Mitspielers." +
-                "Der Spieler mit dem niedrigeren Wert scheidet aus.",3);
+                "Der Spieler mit dem niedrigeren Wert scheidet aus.", 3);
     }
+
     @Override
-    public void performEffect (Player currentPlayer, List<Player> players){
+    public void performEffect(Player currentPlayer, List<Player> players) {
         Scanner scanner = new Scanner(System.in);
 
-        // Wähle einen anderen Spieler, dessen Handkarte du vergleichen möchtest
-        System.out.println("Wähle einen anderen Spieler (1-" + (players.size() - 1) + ") zum Vergleich:");
-        for (int i = 0; i < players.size(); i++) {
-            if (players.get(i) != currentPlayer) {
+        while (true) {
+            // Wähle einen anderen Spieler, dessen Handkarte du vergleichen möchtest
+            System.out.println("Wähle einen anderen Spieler (1-" + players.size() + ") zum Vergleich:");
+            for (int i = 0; i < players.size(); i++) {
                 System.out.println((i + 1) + ". " + players.get(i).getName());
             }
-        }
 
-        int selectedPlayerIndex = scanner.nextInt();
-        if (selectedPlayerIndex < 1 || selectedPlayerIndex >= players.size() || players.get(selectedPlayerIndex) == currentPlayer) {
-            System.out.println("Ungültige Auswahl. Bitte wähle einen anderen Spieler.");
-            return;
-        }
+            int selectedPlayerIndex = scanner.nextInt() - 1;
+            if (selectedPlayerIndex < 0 || selectedPlayerIndex >= players.size() || selectedPlayerIndex == players.indexOf(currentPlayer)) {
+                System.out.println("Ungültige Auswahl. Bitte wähle einen anderen Spieler.");
+            } else {
+                // Gültige Auswahl
+                Player selectedPlayer = players.get(selectedPlayerIndex);
+                Card currentPlayerCard = currentPlayer.getHand().get(1); // Die zweite Karte des aktuellen Spielers
+                Card selectedPlayerCard = selectedPlayer.getHand().get(0); // Die einzige Karte des ausgewählten Spielers
 
-        Player selectedPlayer = players.get(selectedPlayerIndex);
-        Card currentPlayerCard = currentPlayer.getHand().get(1); // Die zweite Karte des aktuellen Spielers
-        Card selectedPlayerCard = selectedPlayer.getHand().get(0); // Die einzige Karte des ausgewählten Spielers
+                System.out.println(currentPlayer.getName() + " hat eine " + currentPlayerCard.getName());
+                System.out.println(selectedPlayer.getName() + " hat eine " + selectedPlayerCard.getName());
 
-        System.out.println(currentPlayer.getName() + " hat eine " + currentPlayerCard.getName());
-        System.out.println(selectedPlayer.getName() + " hat eine " + selectedPlayerCard.getName());
-
-        if (currentPlayerCard.getScore() > selectedPlayerCard.getScore()) {
-            System.out.println(currentPlayer.getName() + " gewinnt! " + selectedPlayer.getName() + " scheidet aus.");
-            players.remove(selectedPlayer);
-        } else if (currentPlayerCard.getScore() < selectedPlayerCard.getScore()) {
-            System.out.println(selectedPlayer.getName() + " gewinnt! " + currentPlayer.getName() + " scheidet aus.");
-            players.remove(currentPlayer);
-        } else {
-            System.out.println("Unentschieden! Niemand scheidet aus.");
+                if (currentPlayerCard.getScore() > selectedPlayerCard.getScore()) {
+                    System.out.println(currentPlayer.getName() + " gewinnt! " + selectedPlayer.getName() + " scheidet aus.");
+                    players.remove(selectedPlayer);
+                    selectedPlayer.eliminate();
+                } else if (currentPlayerCard.getScore() < selectedPlayerCard.getScore()) {
+                    System.out.println(selectedPlayer.getName() + " gewinnt! " + currentPlayer.getName() + " scheidet aus.");
+                    players.remove(currentPlayer);
+                    currentPlayer.eliminate();
+                } else {
+                    System.out.println("Unentschieden! Niemand scheidet aus.");
+                }
+                break;
+            }
         }
     }
 }
@@ -277,16 +284,18 @@ class CountessCard extends Card {
 
 class PrincessCard extends Card {
     public PrincessCard() {
-        super("Prinzessin", "Wenn du die Prinzessin ablegst, scheidest du aus.",8);
+        super("Prinzessin", "Wenn du die Prinzessin ablegst, scheidest du aus.", 8);
     }
+
     @Override
-    public void performEffect (Player currentPlayer, List<Player> players){
+    public void performEffect(Player currentPlayer, List<Player> players) {
         // Entferne die Prinzessin aus der Hand des aktuellen Spielers
         List<Card> currentPlayerHand = currentPlayer.getHand();
         currentPlayerHand.remove(this);
 
         // Der Spieler scheidet aus dem Spiel aus
         players.remove(currentPlayer);
+        currentPlayer.eliminate();
 
         System.out.println(currentPlayer.getName() + " hat die Prinzessin abgelegt und scheidet aus dem Spiel aus.");
     }

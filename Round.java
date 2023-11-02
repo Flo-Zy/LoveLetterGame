@@ -23,71 +23,88 @@ class Round {
                 player.addToHand(card);
             }
         }
+        System.out.println("Du kannst nun mit \\playcard deinen Spielzug ausführen");
     }
 
     public void playTurn() {
-        // Überprüfe, ob der Nachziehstapel leer ist
-        if (deck.isEmpty()) {
-            endRound();
-            return;
-        }
-        Player currentPlayer = players.get(currentPlayerIndex);
-        if (currentPlayer.isProtected()) {
-            // Wenn der Spieler geschützt ist, gib eine Nachricht aus und beende seinen Zug
-            System.out.println(currentPlayer.getName() + " ist geschützt und überspringt diesen Zug.");
-            currentPlayer.setProtected(false); // Setze den Schutz-Status zurück
-            currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
-            return;
-        }
+        try {
+            // Überprüfe, ob der Nachziehstapel leer ist
+            if (deck.isEmpty()) {
+                endRound();
+                return;
+            }
+            Player currentPlayer = players.get(currentPlayerIndex);
 
-        Card drawnCard = deck.drawCard();
-        if (drawnCard != null) {
-            currentPlayer.addToHand(drawnCard);
-        }
-
-        while (true) {
-
-            // Ziehe eine Karte vom Nachziehstapel und füge sie der Hand des Spielers hinzu
-
-            // Gib die Karten in der Hand des aktuellen Spielers aus
-            System.out.println(currentPlayer.getName() + "'s Hand:");
-            List<Card> hand = currentPlayer.getHand();
-            for (int i = 0; i < hand.size(); i++) {
-                System.out.println((i + 1) + ". " + hand.get(i).getName());
+            if (currentPlayer.isEliminated()) {
+                System.out.println(currentPlayer.getName() + " ist bereits ausgeschieden und überspringt diesen Zug.");
+                currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+                return;
             }
 
-            // Lasse den Spieler eine Karte aus seiner Hand auswählen
-            System.out.print("Wähle die Nummer der Karte, die du spielen möchtest: ");
-            int chosenCardIndex;
-
-            try {
-                chosenCardIndex = scanner.nextInt();
-            } catch (InputMismatchException e) {
-                // Ungültige Eingabe (nicht numerisch)
-                System.out.println("Ungültige Eingabe. Bitte gib eine gültige Kartennummer an.");
-                scanner.nextLine(); // Leere den Scanner-Puffer
-                continue;
-                // Beende die Methode
+            if (currentPlayer.isProtected()) {
+                // Wenn der Spieler geschützt ist, gib eine Nachricht aus und beende seinen Zug
+                System.out.println(currentPlayer.getName() + " ist geschützt und überspringt diesen Zug.");
+                currentPlayer.setProtected(false); // Setze den Schutz-Status zurück
+                currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+                return;
             }
 
-            if (chosenCardIndex < 1 || chosenCardIndex > hand.size()) {
-                System.out.println("Ungültige Auswahl. Bitte wähle eine gültige Kartennummer.");
-                continue;
-                // Beende die Methode
+            Card drawnCard = deck.drawCard();
+            if (drawnCard != null) {
+                currentPlayer.addToHand(drawnCard);
             }
 
-            // Hol die ausgewählte Karte
-            Card selectedCard = hand.get(chosenCardIndex - 1);
+            while (true) {
 
-            // Führe die Aktion der ausgewählten Karte aus (performEffect)
-            selectedCard.performEffect(currentPlayer, players);
+                // Ziehe eine Karte vom Nachziehstapel und füge sie der Hand des Spielers hinzu
 
-            // Entferne die ausgespielte Karte aus der Hand des Spielers
-            hand.remove(chosenCardIndex - 1);
+                // Gib die Karten in der Hand des aktuellen Spielers aus
+                System.out.println(currentPlayer.getName() + "'s Hand:");
+                List<Card> hand = currentPlayer.getHand();
+                for (int i = 0; i < hand.size(); i++) {
+                    System.out.println((i + 1) + ". " + hand.get(i).getName());
+                }
 
-            // Wechsle zum nächsten Spieler
-            currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
-            break;
+                // Lasse den Spieler eine Karte aus seiner Hand auswählen
+                System.out.print("Wähle die Nummer der Karte, die du spielen möchtest: ");
+                int chosenCardIndex;
+
+                try {
+                    chosenCardIndex = scanner.nextInt();
+                } catch (InputMismatchException e) {
+                    // Ungültige Eingabe (nicht numerisch)
+                    System.out.println("Ungültige Eingabe. Bitte gib eine gültige Kartennummer an.");
+                    scanner.nextLine(); // Leere den Scanner-Puffer
+                    continue;
+                    // Beende die Methode
+                }
+
+                if (chosenCardIndex < 1 || chosenCardIndex > hand.size()) {
+                    System.out.println("Ungültige Auswahl. Bitte wähle eine gültige Kartennummer.");
+                    continue;
+                    // Beende die Methode
+                }
+
+                // Hol die ausgewählte Karte
+                Card selectedCard = hand.get(chosenCardIndex - 1);
+
+                // Führe die Aktion der ausgewählten Karte aus (performEffect)
+                selectedCard.performEffect(currentPlayer, players);
+
+                // Entferne die ausgespielte Karte aus der Hand des Spielers
+                hand.remove(chosenCardIndex - 1);
+
+                // Wechsle zum nächsten Spieler
+                currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+                Player nextPlayer = players.get(currentPlayerIndex);
+
+                System.out.println("Dein Zug wurde jetzt beendet.");
+                Thread.sleep(2500);
+                System.out.println(nextPlayer.getName() + " ist jetzt dran und kann mit \\playcard seinen Spielzug beginnen");
+                break;
+            }
+        } catch (InterruptedException e) {
+            System.out.println("Ein Fehler ist aufgetreten: " + e.getMessage());
         }
     }
 
@@ -118,13 +135,23 @@ class Round {
         // Zum Beispiel:
         Player roundWinner = null;
         int maxScore = 0;
+        int remainingPlayers = 0;
 
         for (Player player : players) {
-            int playerScore = calculatePlayerScore(player);
-            if (playerScore > maxScore) {
-                maxScore = playerScore;
-                roundWinner = player;
+            // Überprüfe, ob der Spieler noch im Spiel ist (nicht ausgeschieden)
+            if (!player.isEliminated()) {
+                remainingPlayers++;
+                int playerScore = calculatePlayerScore(player);
+                if (playerScore > maxScore) {
+                    maxScore = playerScore;
+                    roundWinner = player;
+                }
             }
+        }
+
+        // Wenn nur noch ein Spieler übrig ist, wird dieser als Gewinner der Runde betrachtet
+        if (remainingPlayers == 1) {
+            roundWinner = players.stream().filter(player -> !player.isEliminated()).findFirst().orElse(null);
         }
 
         return roundWinner;

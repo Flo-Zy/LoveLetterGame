@@ -28,7 +28,6 @@ public class LoveLetterGame {
     public void playCard() {
         round.playTurn();
         //Karte wird gespielt
-        System.out.println("Karte wird gespielt......");
     }
 
     public void showHand() {
@@ -70,7 +69,7 @@ public class LoveLetterGame {
             for (int i = 0; i < AnzahlDerPlayer; i++) {
                 System.out.print("Name von Spieler Nr." + (i + 1) + ":    ");
                 String playerName = scanner.nextLine();
-                System.out.print( playerName + ", vor wie vielen Tagen hattest du dein letztes Date ? :");
+                System.out.print( playerName + ", vor wie vielen Tagen hattest du dein letztes Date ? :    ");
                 int daysUntilLastDate = scanner.nextInt();
                 scanner.nextLine();
                 game.addPlayer(playerName, daysUntilLastDate);
@@ -80,7 +79,8 @@ public class LoveLetterGame {
             for (Player player : players) {
                 System.out.println( player.getName());
             }
-            System.out.println("Wir können nun loslegen!!!");
+            Thread.sleep(1000);
+            System.out.println("Wir können nun loslegen !!!");
             Thread.sleep(1500);
 
             System.out.println("Spielbefehle: ");

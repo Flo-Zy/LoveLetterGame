@@ -7,12 +7,14 @@ class Player {
     private int score;
     private List<Card> hand;
     private boolean isProtected;
+    private boolean eliminated;
 
     public Player(String name, int daysUntilLastDate) {
         this.name = name;
         this.daysUntilLastDate = daysUntilLastDate;
         this.score = 0;
         this.hand = new ArrayList<>();
+        eliminated = false;
     }
 
     public String getName() {
@@ -51,4 +53,11 @@ class Player {
         score++;
     }
 
+    public boolean isEliminated() {
+        return eliminated;
+    }
+
+    public void eliminate() {
+        eliminated = true; // Setze den Spieler als ausgeschieden
+    }
 }
