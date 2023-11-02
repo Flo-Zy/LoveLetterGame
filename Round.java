@@ -1,29 +1,50 @@
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
+import java.util.ArrayList;
 
 class Round {
     private static Deck deck;
     private static List<Player> players;
     private int currentPlayerIndex;
     private Scanner scanner;
+    private static List<Card> asideCards;
 
     public Round(Deck deck, List<Player> players) {
         this.deck = deck;
         this.players = players;
         currentPlayerIndex = 0;
         scanner = new Scanner(System.in);
+        asideCards = new ArrayList<>();
     }
 
     public static void startRound() {
         deck.shuffle();
+        int asideCardCount = players.size() == 2 ? 3 : 1;
+
+        for (int i = 0; i < asideCardCount; i++) {
+            Card asideCard = deck.drawCard();
+            asideCards.add(asideCard);
+        }
+
         for (Player player : players) {
             Card card = deck.drawCard();
             if (card != null) {
                 player.addToHand(card);
             }
         }
-        System.out.println("Du kannst nun mit \\playcard deinen Spielzug ausführen");
+
+        if (asideCardCount == 3) {
+            System.out.println("Beiseite gelegte Karten:");
+            for (int i = 0; i < asideCardCount; i++) {
+                System.out.println((i + 1) + ". " + asideCards.get(i).getName());
+            }
+            System.out.println("Du kannst diese Karten jederzeit mit \\showAsideCards anzeigen.");
+        }
+        else if (asideCardCount == 1) {
+
+        }
+        System.out.println(players.get(0).getName() +",du kannst nun mit \\playcard deinen Spielzug ausführen");
     }
 
     public void playTurn() {
@@ -92,13 +113,17 @@ class Round {
                 selectedCard.performEffect(currentPlayer, players);
 
                 // Entferne die ausgespielte Karte aus der Hand des Spielers
-                hand.remove(chosenCardIndex - 1);
+                currentPlayer.playCard(selectedCard);
 
                 // Wechsle zum nächsten Spieler
                 currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
                 Player nextPlayer = players.get(currentPlayerIndex);
 
                 System.out.println("Dein Zug wurde jetzt beendet.");
+                System.out.println(currentPlayer.getName() + " hat folgende Karten bis jetzt schon gespielt:");
+                for (Card playedCard : currentPlayer.getPlayedCards()) {
+                    System.out.println(playedCard.getName());
+                }
                 Thread.sleep(2500);
                 System.out.println(nextPlayer.getName() + " ist jetzt dran und kann mit \\playcard seinen Spielzug beginnen");
                 break;
@@ -173,6 +198,18 @@ class Round {
         // Hier kannst du die Spieler für die nächste Runde vorbereiten, z.B. ihre Hände leeren.
         for (Player player : players) {
             player.clearHand();
+            player.clearPlayedCards();
+        }
+    }
+
+    public void showAsideCards() {
+        if (asideCards.size() > 0) {
+            System.out.println("Beiseite gelegte Karten:");
+            for (int i = 0; i < asideCards.size(); i++) {
+                System.out.println((i + 1) + ". " + asideCards.get(i).getName());
+            }
+        } else {
+            System.out.println("Es wurden keine Karten beiseite gelegt.");
         }
     }
 }

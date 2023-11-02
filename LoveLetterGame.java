@@ -6,7 +6,7 @@ import java.util.Comparator;
 public class LoveLetterGame {
     private static List<Player> players;
     private int AnzahlDerPlayer;
-    private Round round;
+    private static Round round;
 
     public LoveLetterGame() {
         players = new ArrayList<>();
@@ -77,7 +77,7 @@ public class LoveLetterGame {
             players.sort(Comparator.comparing(Player::getDaysUntilLastDate));
             System.out.println("Reihenfolge der Spieler:");
             for (Player player : players) {
-                System.out.println( player.getName());
+                System.out.println(player.getName());
             }
             Thread.sleep(1000);
             System.out.println("Wir können nun loslegen !!!");
@@ -98,17 +98,20 @@ public class LoveLetterGame {
                     game.showHand();
                 } else if (command.equalsIgnoreCase("\\showScore")) {
                     game.showScore();
+                } else if (command.equalsIgnoreCase("\\showAsideCards")) {
+                    round.showAsideCards();
                 } else if (command.equalsIgnoreCase("\\showSequence")) {
                     for (Player player : players) {
                         System.out.println( player.getName());
                     }
                 } else if (command.equalsIgnoreCase("\\help")) {
                     System.out.println("Befehle:");
-                    System.out.println("\\start         Spiel wird gestartet");
-                    System.out.println("\\playCard      Karte wird gespielt");
-                    System.out.println("\\showHand      Spielhand wird dir gezeigt");
-                    System.out.println("\\showScore     Zeigt dir den Score");
-                    System.out.println("\\showSequence  Zeigt dir die Reihenfolge der Spieler");
+                    System.out.println("\\start            Spiel wird gestartet");
+                    System.out.println("\\playCard         Karte wird gespielt");
+                    System.out.println("\\showHand         Spielhand wird dir gezeigt");
+                    System.out.println("\\showScore        Zeigt dir den Score");
+                    System.out.println("\\showAsideCards   Zeigt dir den Score");
+                    System.out.println("\\showSequence     Zeigt dir die Reihenfolge der Spieler");
                 } else {
                     System.out.println("Unzulässiger Befehl \\help für Befehlsliste");
                 }
