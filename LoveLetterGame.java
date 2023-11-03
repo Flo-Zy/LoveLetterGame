@@ -97,7 +97,8 @@ public class LoveLetterGame {
                 } else if (command.equalsIgnoreCase("\\showHand")) {
                     game.showHand();
                 } else if (command.equalsIgnoreCase("\\showScore")) {
-                    game.showScore();
+                    //for (int i = 0; i < players.size(); i++) {
+                    //    System.out.println((i + 1) + ". " + player.getName());}
                 } else if (command.equalsIgnoreCase("\\showAsideCards")) {
                     round.showAsideCards();
                 } else if (command.equalsIgnoreCase("\\showSequence")) {

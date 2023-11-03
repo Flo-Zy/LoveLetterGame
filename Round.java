@@ -44,7 +44,8 @@ class Round {
         else if (asideCardCount == 1) {
 
         }
-        System.out.println(players.get(0).getName() +",du kannst nun mit \\playcard deinen Spielzug ausführen");
+        Player firstPlayer = players.get(0);
+        System.out.println(firstPlayer.getName() +",du kannst nun mit \\playcard deinen Spielzug ausführen");
     }
 
     public void playTurn() {
@@ -113,7 +114,10 @@ class Round {
                 selectedCard.performEffect(currentPlayer, players);
 
                 // Entferne die ausgespielte Karte aus der Hand des Spielers
-                currentPlayer.playCard(selectedCard);
+                hand.remove(chosenCardIndex - 1);
+
+                // Füge die ausgespielte Karte zu den gespielten Karten des Spielers hinzu
+                currentPlayer.addPlayedCard(selectedCard);
 
                 // Wechsle zum nächsten Spieler
                 currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
@@ -124,6 +128,9 @@ class Round {
                 for (Card playedCard : currentPlayer.getPlayedCards()) {
                     System.out.println(playedCard.getName());
                 }
+                if (deck.isEmpty() || allPlayersButOneEliminated()) {
+                    endRound(); // Runde beenden und Gewinner ermitteln
+                }
                 Thread.sleep(2500);
                 System.out.println(nextPlayer.getName() + " ist jetzt dran und kann mit \\playcard seinen Spielzug beginnen");
                 break;
@@ -131,6 +138,7 @@ class Round {
         } catch (InterruptedException e) {
             System.out.println("Ein Fehler ist aufgetreten: " + e.getMessage());
         }
+
     }
 
     private void endRound() {
@@ -198,8 +206,15 @@ class Round {
         // Hier kannst du die Spieler für die nächste Runde vorbereiten, z.B. ihre Hände leeren.
         for (Player player : players) {
             player.clearHand();
-            player.clearPlayedCards();
+            List<Card> playerPlayedCards = player.getPlayedCards();
+            deck.addPlayedCards(playerPlayedCards);
+            playerPlayedCards.clear();
+            player.setProtected(false);
         }
+        deck.addAsideCards(asideCards);
+        asideCards.clear();
+
+        startRound();
     }
 
     public void showAsideCards() {
@@ -212,4 +227,15 @@ class Round {
             System.out.println("Es wurden keine Karten beiseite gelegt.");
         }
     }
+
+    private boolean allPlayersButOneEliminated() {
+        int activePlayersCount = 0;
+        for (Player player : players) {
+            if (!player.isEliminated()) {
+                activePlayersCount++;
+            }
+        }
+        return activePlayersCount == 1;
+    }
+
 }

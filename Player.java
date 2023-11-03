@@ -23,7 +23,7 @@ class Player {
         return name;
     }
 
-    public int getDaysUntilLastDate(){
+    public int getDaysUntilLastDate() {
         return daysUntilLastDate;
     }
 
@@ -35,7 +35,7 @@ class Player {
         return hand;
     }
 
-    public void addToHand(Card card){
+    public void addToHand(Card card) {
         hand.add(card);
     }
 
@@ -47,9 +47,8 @@ class Player {
         return playedCards;
     }
 
-    public void playCard(Card card) {
-        hand.remove(card);
-        playedCards.add(card);
+    public void addPlayedCard(Card selectedCard) {
+        playedCards.add(selectedCard);
     }
 
     public void clearPlayedCards() {

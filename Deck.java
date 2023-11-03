@@ -47,4 +47,11 @@ import java.util.Collections;
     public void addCard(Card card){
         cards.add(card);
     }
-}
+
+    public void addPlayedCards(List<Card> playerPlayedCards) {
+    }
+
+     public void addAsideCards(List<Card> asideCards) {
+         cards.addAll(asideCards);
+     }
+ }
