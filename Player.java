@@ -77,6 +77,10 @@ class Player {
         return score;
     }
 
+    public void setEliminated(boolean eliminated) {
+        this.eliminated = eliminated;
+    }
+
     public boolean isEliminated() {
         return eliminated;
     }

@@ -1,5 +1,6 @@
 import java.util.List;
 import java.util.Scanner;
+import java.util.ArrayList;
 
 public abstract class Card {
     private String name;
@@ -30,44 +31,56 @@ public abstract class Card {
 class GuardCard extends Card {
     public GuardCard() {
         super("Wächterin", "Errätst du die Handkarte eines Mitspielers, " +
-                "scheidet dieser aus. Gilt nicht für \"Wächterin\"!",1);
+                "scheidet dieser aus. Gilt nicht für \"Wächterin\"!", 1);
     }
     @Override
-    public void performEffect (Player currentPlayer, List<Player> players){
+    public void performEffect(Player currentPlayer, List<Player> players) {
         Scanner scanner = new Scanner(System.in);
-
-        int targetPlayerNumber;
-        Player targetPlayer = null;
 
         int guessedCard = 0; // Initialisiere guessedCard
 
+        List<Player> selectablePlayers = new ArrayList<>();
+
+        for (Player player : players) {
+            if (!player.isEliminated() && !player.isProtected()) {
+                selectablePlayers.add(player);
+            }
+        }
+
+        if (selectablePlayers.isEmpty()) {
+            System.out.println("Es gibt keine wählbaren Spieler.");
+            return;
+        }
+
+        int targetPlayerNumber;
+        Player targetPlayer = null;
         boolean validSelection = false;
 
         while (!validSelection) {
-            // Gib die Spieler mit Nummern aus
-            System.out.println("Wähle einen anderen Spieler (1-" + players.size() + "):");
-            for (int i = 0; i < players.size(); i++) {
-                System.out.println((i + 1) + ". " + players.get(i).getName());
+            // Gib die wählbaren Spieler mit Nummern aus
+            System.out.println("Wähle einen anderen Spieler (1-" + selectablePlayers.size() + "):");
+            for (int i = 0; i < selectablePlayers.size(); i++) {
+                Player player = selectablePlayers.get(i);
+                System.out.println((i + 1) + ". " + player.getName());
             }
 
             // Eingabe der gewählten Nummer
             targetPlayerNumber = scanner.nextInt();
 
-            // Überprüfe, ob die ausgewählte Nummer gültig ist
-            if (targetPlayerNumber >= 1 && targetPlayerNumber <= players.size()) {
-                targetPlayer = players.get(targetPlayerNumber - 1);
+            if (targetPlayerNumber >= 1 && targetPlayerNumber <= selectablePlayers.size()) {
+                targetPlayer = selectablePlayers.get(targetPlayerNumber - 1);
 
                 // Eingabe, um die Handkarte zu erraten
-                System.out.println("1.Wächterin    2.Priester     3.Baron        4.Zofe");
-                System.out.println("5.Prinz        6.König        7.Gräfin       8.Prinzessin");
-                System.out.print("Errate die Handkarte des ausgewählten Spielers (1-8):    ");
+
+                System.out.print("Errate die Handkarte des ausgewählten Spielers (2-8): ");
                 guessedCard = scanner.nextInt();
 
-                // Überprüfe, ob die ausgewählte Karte gültig ist
-                if (guessedCard >= 1 && guessedCard <= 8) {
+                if (guessedCard == 1) {
+                    System.out.println("Du darfst keine Wächterin wählen.");
+                } else if (guessedCard >= 2 && guessedCard <= 8) {
                     validSelection = true;
                 } else {
-                    System.out.println("Ungültige Auswahl. Bitte wähle eine Karte zwischen 1 und 8.");
+                    System.out.println("Ungültige Auswahl. Bitte wähle eine Karte zwischen 2 und 8.");
                 }
             } else {
                 System.out.println("Ungültige Auswahl. Bitte wähle einen gültigen Spieler.");
@@ -77,7 +90,6 @@ class GuardCard extends Card {
         // Überprüfe, ob die erratene Karte mit der tatsächlichen Karte des Spielers übereinstimmt
         if (targetPlayer.getHand().get(0).getScore() == guessedCard) {
             System.out.println("Richtig erraten! " + targetPlayer.getName() + " scheidet aus.");
-            //players.remove(targetPlayer);
             targetPlayer.eliminate();
         } else {
             System.out.println("Falsch geraten. " + targetPlayer.getName() + " scheidet nicht aus.");
@@ -87,23 +99,34 @@ class GuardCard extends Card {
 
 class PriestCard extends Card {
     public PriestCard() {
-        super("Priester", "Schaue dir die Handkarte eines Mitspielers an.",2);
+        super("Priester", "Schaue dir die Handkarte eines Mitspielers an.", 2);
     }
+
     @Override
-    public void performEffect (Player currentPlayer, List<Player> players){
+    public void performEffect(Player currentPlayer, List<Player> players) {
         Scanner scanner = new Scanner(System.in);
 
-        // Lasse den Spieler einen Mitspieler auswählen
+        // Lasse den Spieler einen Mitspieler auswählen, dessen Handkarte er sehen möchte.
         System.out.println("Wähle einen Mitspieler, dessen Handkarte du sehen möchtest:");
+        List<Player> selectablePlayers = new ArrayList<>();
 
         for (int i = 0; i < players.size(); i++) {
-            System.out.println((i + 1) + ". " + players.get(i).getName());
+            Player player = players.get(i);
+            if (!player.isProtected() && !player.equals(currentPlayer) && !player.isEliminated()) {
+                selectablePlayers.add(player);
+                System.out.println((selectablePlayers.size()) + ". " + player.getName());
+            }
+        }
+
+        if (selectablePlayers.isEmpty()) {
+            System.out.println("Es gibt keine wählbaren Spieler, die nicht geschützt sind oder bereits ausgeschieden sind.");
+            return; // Beende die Methode, da keine wählbaren Spieler verfügbar sind.
         }
 
         int chosenPlayerIndex = scanner.nextInt();
 
-        if (chosenPlayerIndex >= 1 && chosenPlayerIndex <= players.size()) {
-            Player chosenPlayer = players.get(chosenPlayerIndex - 1);
+        if (chosenPlayerIndex >= 1 && chosenPlayerIndex <= selectablePlayers.size()) {
+            Player chosenPlayer = selectablePlayers.get(chosenPlayerIndex - 1);
             Card chosenCard = chosenPlayer.getHand().get(0); // Annahme: Jeder Spieler hat nur eine Karte
 
             // Zeige die Handkarte des gewählten Spielers
@@ -125,19 +148,24 @@ class BaronCard extends Card {
     public void performEffect(Player currentPlayer, List<Player> players) {
         Scanner scanner = new Scanner(System.in);
 
+        List<Player> selectablePlayers = new ArrayList<>(players); // Kopie der Spielerliste
+
         while (true) {
             // Wähle einen anderen Spieler, dessen Handkarte du vergleichen möchtest
-            System.out.println("Wähle einen anderen Spieler (1-" + players.size() + ") zum Vergleich:");
-            for (int i = 0; i < players.size(); i++) {
-                System.out.println((i + 1) + ". " + players.get(i).getName());
+            System.out.println("Wähle einen anderen Spieler (1-" + selectablePlayers.size() + ") zum Vergleich:");
+            for (int i = 0; i < selectablePlayers.size(); i++) {
+                Player player = selectablePlayers.get(i);
+                if (!player.isProtected()) {
+                    System.out.println((i + 1) + ". " + player.getName());
+                }
             }
 
             int selectedPlayerIndex = scanner.nextInt() - 1;
-            if (selectedPlayerIndex < 0 || selectedPlayerIndex >= players.size() || selectedPlayerIndex == players.indexOf(currentPlayer)) {
+            if (selectedPlayerIndex < 0 || selectedPlayerIndex >= selectablePlayers.size() || selectedPlayerIndex == players.indexOf(currentPlayer)) {
                 System.out.println("Ungültige Auswahl. Bitte wähle einen anderen Spieler.");
             } else {
                 // Gültige Auswahl
-                Player selectedPlayer = players.get(selectedPlayerIndex);
+                Player selectedPlayer = selectablePlayers.get(selectedPlayerIndex);
                 Card currentPlayerCard = currentPlayer.getHand().get(1); // Die zweite Karte des aktuellen Spielers
                 Card selectedPlayerCard = selectedPlayer.getHand().get(0); // Die einzige Karte des ausgewählten Spielers
 
@@ -146,11 +174,9 @@ class BaronCard extends Card {
 
                 if (currentPlayerCard.getScore() > selectedPlayerCard.getScore()) {
                     System.out.println(currentPlayer.getName() + " gewinnt! " + selectedPlayer.getName() + " scheidet aus.");
-                    //players.remove(selectedPlayer);
                     selectedPlayer.eliminate();
                 } else if (currentPlayerCard.getScore() < selectedPlayerCard.getScore()) {
                     System.out.println(selectedPlayer.getName() + " gewinnt! " + currentPlayer.getName() + " scheidet aus.");
-                    //players.remove(currentPlayer);
                     currentPlayer.eliminate();
                 } else {
                     System.out.println("Unentschieden! Niemand scheidet aus.");
@@ -175,46 +201,54 @@ class HandmaidCard extends Card {
 
 class PrinceCard extends Card {
     public PrinceCard() {
-        super("Prinz", "Wähle einen Spieler, der seine Handkarte ablegt und eine neue Karte zieht.",5);
+        super("Prinz", "Wähle einen Spieler, der seine Handkarte ablegt und eine neue Karte zieht.", 5);
     }
     @Override
-    public void performEffect (Player currentPlayer, List<Player> players) {
+    public void performEffect(Player currentPlayer, List<Player> players) {
         // Lasse den aktuellen Spieler einen anderen Spieler auswählen
         System.out.println("Wähle einen anderen Spieler (1-" + players.size() + "):");
 
+        List<Player> selectablePlayers = new ArrayList<>();
+
         for (int i = 0; i < players.size(); i++) {
-            System.out.println((i + 1) + ". " + players.get(i).getName());
+            Player player = players.get(i);
+            if (!player.isProtected() && !player.isEliminated() && !player.equals(currentPlayer)) {
+                selectablePlayers.add(player);
+                System.out.println((selectablePlayers.size()) + ". " + player.getName());
+            }
         }
 
         Scanner scanner = new Scanner(System.in);
 
         int chosenPlayerIndex = scanner.nextInt();
 
-        if (chosenPlayerIndex < 1 || chosenPlayerIndex > players.size()) {
+        if (chosenPlayerIndex < 1 || chosenPlayerIndex > selectablePlayers.size()) {
             System.out.println("Ungültige Auswahl. Bitte wähle einen gültigen Spieler.");
             return;
         }
 
         // Wähle den Ziel-Spieler
-        Player targetPlayer = players.get(chosenPlayerIndex - 1);
+        Player targetPlayer = selectablePlayers.get(chosenPlayerIndex - 1);
 
-        // Der Ziel-Spieler legt seine Handkarte ab und zieht eine neue Karte
-        List<Card> targetHand = targetPlayer.getHand();
-        if (!targetHand.isEmpty()) {
-            Card discardedCard = targetHand.get(0);
-            targetHand.remove(0);
+        // Tausche die Handkarte des aktuellen Spielers mit der des Ziel-Spielers
+        List<Card> currentPlayerHand = currentPlayer.getHand();
+        List<Card> targetPlayerHand = targetPlayer.getHand();
 
-            // Ziehe eine neue Karte vom Deck und füge sie der Hand des Ziel-Spielers hinzu
-            Card newCard = currentPlayer.getHand().get(0); // Die erste Karte aus der Hand des aktuellen Spielers
-            targetHand.add(newCard);
+        // Prüfe, welche Karte des aktuellen Spielers gerade nicht gespielt wird (z.B. die erste Karte)
+        int currentPlayerCardIndex = (currentPlayerHand.get(0) == this) ? 1 : 0;
+        int targetPlayerCardIndex = (targetPlayerHand.get(0) == this) ? 1 : 0;
 
-            // Der aktuelle Spieler verliert seine Handkarte
-            currentPlayer.getHand().remove(0);
+        // Tausche die Karten
+        Card currentPlayerCard = currentPlayerHand.get(currentPlayerCardIndex);
+        Card targetPlayerCard = targetPlayerHand.get(targetPlayerCardIndex);
 
-            System.out.println(targetPlayer.getName() + " legt " + discardedCard.getName() + " ab und zieht eine neue Karte.");
-        } else {
-            System.out.println(targetPlayer.getName() + " hat keine Handkarte zu verlieren.");
-        }
+        currentPlayerHand.set(currentPlayerCardIndex, targetPlayerCard);
+        targetPlayerHand.set(targetPlayerCardIndex, currentPlayerCard);
+
+        String yourCardType = (currentPlayerCardIndex == 0) ? "erste" : "zweite";
+        String targetCardType = (targetPlayerCardIndex == 0) ? "erste" : "zweite";
+
+        System.out.println("Du tauschst deine " + yourCardType + " Karte mit einer " + targetCardType + " Karte von " + targetPlayer.getName() + ".");
     }
 }
 

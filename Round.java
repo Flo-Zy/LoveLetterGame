@@ -59,16 +59,14 @@ class Round {
                 if (currentPlayer.isEliminated()) {
                     System.out.println(currentPlayer.getName() + " ist bereits ausgeschieden und überspringt diesen Zug.");
                     currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
-                    return;
+                    continue;
                 }
 
-                /*if (currentPlayer.isProtected()) {
+                if (currentPlayer.isProtected()) {
                     // Wenn der Spieler geschützt ist, gib eine Nachricht aus und beende seinen Zug
-                    System.out.println(currentPlayer.getName() + " ist geschützt und überspringt diesen Zug.");
+                    System.out.println(currentPlayer.getName() + " dein Schutz wurde nun aufgehoben und du kannst eine Karte spielen");
                     currentPlayer.setProtected(false); // Setze den Schutz-Status zurück
-                    currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
-                    return;
-                }*/
+                }
 
                 Card drawnCard = deck.drawCard();
                 if (drawnCard != null) {
@@ -109,6 +107,8 @@ class Round {
                     // Hol die ausgewählte Karte
                     Card selectedCard = hand.get(chosenCardIndex - 1);
 
+
+
                     // Führe die Aktion der ausgewählten Karte aus (performEffect)
                     selectedCard.performEffect(currentPlayer, players);
 
@@ -121,18 +121,14 @@ class Round {
                     if (deck.isEmpty() || allPlayersButOneEliminated()) {
                         endRound(); // Runde beenden und Gewinner ermitteln
                     }
-                    // Wechsle zum nächsten Spieler
-                    currentPlayerIndex = (currentPlayerIndex) % players.size();
-                    Player nextPlayer = players.get(currentPlayerIndex + 1);
 
                     System.out.println("Dein Zug wurde jetzt beendet.");
                     System.out.println(currentPlayer.getName() + " hat folgende Karten bis jetzt schon gespielt:");
                     for (Card playedCard : currentPlayer.getPlayedCards()) {
                         System.out.println(playedCard.getName());
                     }
-
+                    System.out.println("Der nächste Spieler ist jetzt dran und kann mit \\playcard seinen Spielzug beginnen");
                     Thread.sleep(2500);
-                    System.out.println(nextPlayer.getName() + " ist jetzt dran und kann mit \\playcard seinen Spielzug beginnen");
                     break;
                 }
                 currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
@@ -238,10 +234,10 @@ class Round {
     }*/
 
     private void prepareForNextRound() {
-        Player lastRoundWinner = determineRoundWinnerByCards();
+        //Player lastRoundWinner = determineRoundWinnerByCards();
 
         // Speichere die ursprüngliche Reihenfolge der Spieler
-        List<Player> originalOrder = new ArrayList<>(players);
+        //List<Player> originalOrder = new ArrayList<>(players);
 
         // Hier kannst du die Spieler für die nächste Runde vorbereiten, z.B. ihre Hände leeren.
         for (Player player : players) {
@@ -250,10 +246,11 @@ class Round {
             deck.addPlayedCards(playerPlayedCards);
             playerPlayedCards.clear();
             player.setProtected(false);
+            player.setEliminated(false);
         }
 
         // Erstelle eine neue Liste für die Spieler in der Reihenfolge der nächsten Runde
-        List<Player> newOrder = new ArrayList<>();
+        /*List<Player> newOrder = new ArrayList<>();
 
         // Füge den Gewinner der letzten Runde an erste Stelle
         newOrder.add(lastRoundWinner);
@@ -266,11 +263,11 @@ class Round {
         }
 
         // Setze die Spielerliste auf die neue Reihenfolge
-        players = newOrder;
+        players = newOrder;*/
 
         deck.addAsideCards(asideCards);
         asideCards.clear();
-
+        currentPlayerIndex = (currentPlayerIndex) % players.size();
         startRound();
     }
 
