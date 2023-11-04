@@ -18,7 +18,6 @@ public class LoveLetterGame {
     }
 
     public void startGame() {
-
         //Spiel wird gestartet
         System.out.println("Spiel wird gestartet......");
         round = new Round (new Deck(), players);
@@ -31,14 +30,27 @@ public class LoveLetterGame {
     }
 
     public void showHand() {
-        //Spielhand wird gezeigt
-        System.out.println("Spielhand wird gezeigt......");
-        //round.showCurrentPlayerHand
+        Player currentPlayer = players.get(round.getCurrentPlayerIndex());
+        System.out.println(currentPlayer.getName() + "'s Hand:");
+        List<Card> hand = currentPlayer.getHand();
+        for (int i = 0; i < hand.size(); i++) {
+            System.out.println((i + 1) + ". " + hand.get(i).getName());
+        }
     }
 
     public void showScore() {
-        //Zeigt den Score
-        System.out.println("Dein Score ist: ...... ");
+        System.out.println("Punktestand der Spieler:");
+        for (Player player : players) {
+            System.out.println(player.getName() + ": " + player.getScore() + " Punkt(e)");
+        }
+    }
+
+    public void showPlayers() {
+        System.out.println("Spielerübersicht:");
+        for (Player player : players) {
+            String status = player.isEliminated() ? "Ausgeschieden" : "Aktiv";
+            System.out.println(player.getName() + " - Status: " + status);
+        }
     }
 
     public static void main(String[] args) {
@@ -97,22 +109,19 @@ public class LoveLetterGame {
                 } else if (command.equalsIgnoreCase("\\showHand")) {
                     game.showHand();
                 } else if (command.equalsIgnoreCase("\\showScore")) {
-                    //for (int i = 0; i < players.size(); i++) {
-                    //    System.out.println((i + 1) + ". " + player.getName());}
+                    game.showScore();
+                } else if (command.equalsIgnoreCase("\\showPlayers")) {
+                    game.showPlayers();
                 } else if (command.equalsIgnoreCase("\\showAsideCards")) {
                     round.showAsideCards();
-                } else if (command.equalsIgnoreCase("\\showSequence")) {
-                    for (Player player : players) {
-                        System.out.println( player.getName());
-                    }
                 } else if (command.equalsIgnoreCase("\\help")) {
                     System.out.println("Befehle:");
                     System.out.println("\\start            Spiel wird gestartet");
                     System.out.println("\\playCard         Karte wird gespielt");
                     System.out.println("\\showHand         Spielhand wird dir gezeigt");
                     System.out.println("\\showScore        Zeigt dir den Score");
-                    System.out.println("\\showAsideCards   Zeigt dir den Score");
-                    System.out.println("\\showSequence     Zeigt dir die Reihenfolge der Spieler");
+                    System.out.println("\\showPlayers      Zeigt dir die Spieler und ob sie ausgeschieden sind oder nicht");
+                    System.out.println("\\showAsideCards   Zeigt dir die Karten die beiseite gelegt worden sind");
                 } else {
                     System.out.println("Unzulässiger Befehl \\help für Befehlsliste");
                 }

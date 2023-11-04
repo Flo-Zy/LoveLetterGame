@@ -77,7 +77,7 @@ class GuardCard extends Card {
         // Überprüfe, ob die erratene Karte mit der tatsächlichen Karte des Spielers übereinstimmt
         if (targetPlayer.getHand().get(0).getScore() == guessedCard) {
             System.out.println("Richtig erraten! " + targetPlayer.getName() + " scheidet aus.");
-            players.remove(targetPlayer);
+            //players.remove(targetPlayer);
             targetPlayer.eliminate();
         } else {
             System.out.println("Falsch geraten. " + targetPlayer.getName() + " scheidet nicht aus.");
@@ -146,11 +146,11 @@ class BaronCard extends Card {
 
                 if (currentPlayerCard.getScore() > selectedPlayerCard.getScore()) {
                     System.out.println(currentPlayer.getName() + " gewinnt! " + selectedPlayer.getName() + " scheidet aus.");
-                    players.remove(selectedPlayer);
+                    //players.remove(selectedPlayer);
                     selectedPlayer.eliminate();
                 } else if (currentPlayerCard.getScore() < selectedPlayerCard.getScore()) {
                     System.out.println(selectedPlayer.getName() + " gewinnt! " + currentPlayer.getName() + " scheidet aus.");
-                    players.remove(currentPlayer);
+                    //players.remove(currentPlayer);
                     currentPlayer.eliminate();
                 } else {
                     System.out.println("Unentschieden! Niemand scheidet aus.");
@@ -233,7 +233,7 @@ class KingCard extends Card {
 
         Scanner scanner = new Scanner(System.in);
 
-        int chosenPlayerIndex = scanner.nextInt();
+        int chosenPlayerIndex = scanner.nextInt() ;
 
         if (chosenPlayerIndex < 1 || chosenPlayerIndex > players.size()) {
             System.out.println("Ungültige Auswahl. Bitte wähle einen gültigen Spieler.");
@@ -291,10 +291,10 @@ class PrincessCard extends Card {
     public void performEffect(Player currentPlayer, List<Player> players) {
         // Entferne die Prinzessin aus der Hand des aktuellen Spielers
         List<Card> currentPlayerHand = currentPlayer.getHand();
-        currentPlayerHand.remove(this);
+        //currentPlayerHand.remove(this);
 
+        //players.remove(currentPlayer);
         // Der Spieler scheidet aus dem Spiel aus
-        players.remove(currentPlayer);
         currentPlayer.eliminate();
 
         System.out.println(currentPlayer.getName() + " hat die Prinzessin abgelegt und scheidet aus dem Spiel aus.");

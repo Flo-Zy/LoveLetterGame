@@ -51,7 +51,15 @@ import java.util.Collections;
     public void addPlayedCards(List<Card> playerPlayedCards) {
     }
 
-     public void addAsideCards(List<Card> asideCards) {
-         cards.addAll(asideCards);
-     }
+    public void addAsideCards(List<Card> asideCards) {
+        cards.addAll(asideCards);
+    }
+
+    public Card drawFromAsideCards(List<Card> asideCards) {
+        if (asideCards.size() == 1) {
+            return asideCards.remove(0); // Hier nehmen wir die erste Karte aus asideCards.
+        }
+        return null; // Gib null zurück, wenn asideCards leer ist.
+    }
  }
+

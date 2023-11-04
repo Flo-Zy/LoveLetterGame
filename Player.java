@@ -16,7 +16,7 @@ class Player {
         this.score = 0;
         this.hand = new ArrayList<>();
         playedCards = new ArrayList<>();
-        eliminated = false;
+        this.eliminated = false;
     }
 
     public String getName() {
@@ -67,12 +67,21 @@ class Player {
         score++;
     }
 
+    public int calculatePlayerScore() {
+
+        int score = 0;
+        for (Card card : hand) {
+            score += card.getScore();
+        }
+
+        return score;
+    }
+
     public boolean isEliminated() {
         return eliminated;
     }
 
     public void eliminate() {
-        eliminated = true; // Setze den Spieler als ausgeschieden
+        this.eliminated = true; // Setze den Spieler als ausgeschieden
     }
-
 }
