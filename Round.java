@@ -2,13 +2,16 @@ import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.util.Comparator;
+
 
 class Round {
     private static Deck deck;
     private static List<Player> players;
-    private int currentPlayerIndex;
+    private static int currentPlayerIndex;
     private Scanner scanner;
     private static List<Card> asideCards;
+    private Player roundWinner;
 
     public Round(Deck deck, List<Player> players) {
         this.deck = deck;
@@ -16,6 +19,7 @@ class Round {
         currentPlayerIndex = 0;
         scanner = new Scanner(System.in);
         asideCards = new ArrayList<>();
+        roundWinner = null;
     }
 
     public static void startRound() {
@@ -33,17 +37,33 @@ class Round {
                 player.addToHand(card);
             }
         }
-
+        System.out.println("Beiseite gelegte Karte(n):");
         if (asideCardCount == 3) {
-            System.out.println("Beiseite gelegte Karten:");
             for (int i = 0; i < asideCardCount; i++) {
                 System.out.println((i + 1) + ". " + asideCards.get(i).getName());
             }
-            System.out.println("Du kannst diese Karten jederzeit mit \\showAsideCards anzeigen.");
+        } else if (asideCardCount == 1) {
+            for (int i = 0; i < asideCardCount; i++) {
+                System.out.println((i + 1) + ". " + asideCards.get(i).getName());
+            }
         }
+        System.out.println("Du kannst diese Karten jederzeit mit \\showAsideCards anzeigen.");
+        Player firstPlayer = players.get(currentPlayerIndex);
+        System.out.println(firstPlayer.getName() + ",du kannst nun mit \\playcard deinen Spielzug ausführen");
+    }
 
-        Player firstPlayer = players.get(0);
-        System.out.println(firstPlayer.getName() +",du kannst nun mit \\playcard deinen Spielzug ausführen");
+    public void playRound() {
+        while (!deck.isEmpty() && !allPlayersButOneEliminated()) {
+            playTurn();
+            if (!deck.isEmpty() || !allPlayersButOneEliminated()) {
+                currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+                Player nextPlayer = players.get(currentPlayerIndex);
+                System.out.println(nextPlayer.getName() + " ist jetzt dran und kann mit \\playcard seinen Spielzug beginnen");
+                System.out.println("\\help für weitere Befehle");
+            }
+            break;
+        }
+        endRound();
     }
 
     public void playTurn() {
@@ -58,8 +78,10 @@ class Round {
 
                 if (currentPlayer.isEliminated()) {
                     System.out.println(currentPlayer.getName() + " ist bereits ausgeschieden und überspringt diesen Zug.");
-                    currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
-                    continue;
+                    //currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+                    //Player nextPlayer = players.get(currentPlayerIndex);
+                    //System.out.println(nextPlayer.getName() + " ist jetzt dran und kann mit \\playcard seinen Spielzug beginnen");
+                    return;
                 }
 
                 if (currentPlayer.isProtected()) {
@@ -107,8 +129,6 @@ class Round {
                     // Hol die ausgewählte Karte
                     Card selectedCard = hand.get(chosenCardIndex - 1);
 
-
-
                     // Führe die Aktion der ausgewählten Karte aus (performEffect)
                     selectedCard.performEffect(currentPlayer, players);
 
@@ -118,22 +138,30 @@ class Round {
                     // Füge die ausgespielte Karte zu den gespielten Karten des Spielers hinzu
                     currentPlayer.addPlayedCard(selectedCard);
 
-                    if (deck.isEmpty() || allPlayersButOneEliminated()) {
-                        endRound(); // Runde beenden und Gewinner ermitteln
-                    }
-
+                    Thread.sleep(2000);
                     System.out.println("Dein Zug wurde jetzt beendet.");
+                    Thread.sleep(1000);
                     System.out.println(currentPlayer.getName() + " hat folgende Karten bis jetzt schon gespielt:");
                     for (Card playedCard : currentPlayer.getPlayedCards()) {
                         System.out.println(playedCard.getName());
                     }
-                    System.out.println("Der nächste Spieler ist jetzt dran und kann mit \\playcard seinen Spielzug beginnen");
-                    Thread.sleep(2500);
-                    break;
+                    /*if (deck.isEmpty() || allPlayersButOneEliminated()) {
+                        endRound(); // Runde beenden und Gewinner ermitteln
+                    }*/
+                    //System.out.println("Der nächste Spieler ist jetzt dran und kann mit \\playcard seinen Spielzug beginnen");
+                    Thread.sleep(3000);
+                    return;
                 }
+                /*if (!deck.isEmpty() || !allPlayersButOneEliminated()) {
                 currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
-                return;
+                Player nextPlayer = players.get(currentPlayerIndex);
+                System.out.println(nextPlayer.getName() + " ist jetzt dran und kann mit \\playcard seinen Spielzug beginnen");
+                System.out.println("\\help für weitere Befehle");
+                continue;
+                }
+                return;*/
             }
+
         } catch (InterruptedException e) {
             System.out.println("Ein Fehler ist aufgetreten: " + e.getMessage());
         }
@@ -152,6 +180,11 @@ class Round {
             for (Player player : players) {
                 System.out.println(player.getName() + ": " + player.getScore() + " Punkt(e)");
             }
+            if (checkScoreCondition()) {
+                System.out.println("Die Score-Bedingung wurde erfüllt. Das Spiel ist beendet.");
+                endGame();
+                return;
+            }
             // Bereite die Spieler für die nächste Runde vor
             prepareForNextRound();
         } else if (deck.isEmpty()) {
@@ -165,6 +198,10 @@ class Round {
             System.out.println("Runde beendet! " + roundWinner.getName() + " gewinnt diese Runde.");
             for (Player player : players) {
                 System.out.println(player.getName() + ": " + player.getScore() + " Punkt(e)");
+            }
+            if (checkScoreCondition()) {
+                endGame(); // Das Spiel beenden
+                return; // Beende die Methode
             }
             // Bereite die Spieler für die nächste Runde vor
             prepareForNextRound();
@@ -190,6 +227,33 @@ class Round {
         }
 
         return roundWinner;
+    }
+
+    private boolean checkScoreCondition() {
+        int playerCount = players.size();
+        int requiredScore;
+
+        switch (playerCount) {
+            case 2:
+                requiredScore = 7;
+                break;
+            case 3:
+                requiredScore = 5;
+                break;
+            case 4:
+                requiredScore = 4;
+                break;
+            default:
+                requiredScore = 0;
+                break;
+        }
+
+        for (Player player : players) {
+            if (player.getScore() >= requiredScore) {
+                return true; // Die Score-Bedingung ist erfüllt
+            }
+        }
+        return false;
     }
 
     /*private Player determineRoundWinner() {
@@ -234,7 +298,7 @@ class Round {
     }*/
 
     private void prepareForNextRound() {
-        //Player lastRoundWinner = determineRoundWinnerByCards();
+        Player roundWinner = determineRoundWinnerByCards();
 
         // Speichere die ursprüngliche Reihenfolge der Spieler
         //List<Player> originalOrder = new ArrayList<>(players);
@@ -267,8 +331,11 @@ class Round {
 
         deck.addAsideCards(asideCards);
         asideCards.clear();
-        currentPlayerIndex = (currentPlayerIndex) % players.size();
-        startRound();
+        if (roundWinner != null) {
+            currentPlayerIndex = players.indexOf(roundWinner);
+        }
+        System.out.println("\\start um mit der neuen Runde zu beginnen.");
+        return;
     }
 
     public void showAsideCards() {
@@ -294,5 +361,26 @@ class Round {
 
     public int getCurrentPlayerIndex() {
         return currentPlayerIndex;
+    }
+
+    private void endGame() {
+        try {
+            System.out.println("Das Spiel ist beendet.");
+
+
+            // Finde den Spieler mit den meisten Punkten (Gesamtsieger)
+            Player gameWinner = players.stream().max(Comparator.comparing(Player::getScore)).orElse(null);
+            Thread.sleep(2500);
+            if (gameWinner != null) {
+                System.out.println("-----------------Glückwunsch-------------------");
+                System.out.println("       Gesamtsieger: " + gameWinner.getName() + " mit " + gameWinner.getScore() + " Punkten.");
+                System.out.println("-----------------------------------------------");
+            } else {
+                System.out.println("Unentschieden!");
+            }
+        } catch (InterruptedException e) {
+            System.out.println("Ein Fehler ist aufgetreten: " + e.getMessage());
+        }
+        System.exit(0);
     }
 }

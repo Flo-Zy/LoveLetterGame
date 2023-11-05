@@ -25,7 +25,7 @@ public class LoveLetterGame {
     }
 
     public void playCard() {
-        round.playTurn();
+        round.playRound();
         //Karte wird gespielt
     }
 
