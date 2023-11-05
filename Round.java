@@ -232,8 +232,6 @@ public class Round {
      * @return Rundensieger oder null, bei unentschieden.
      */
     private Player determineRoundWinnerByCards() {
-        // Implementiere die Logik zur Gewinnerermittlung basierend auf den Kartenwerten der Spieler
-        // Zum Beispiel: Vergleiche die Summe der Kartenwerte in den Händen der Spieler
 
         Player roundWinner = null;
         int maxScore = 0;
@@ -285,30 +283,9 @@ public class Round {
     }
 
     /*private Player determineRoundWinner() {
-        // Hier kannst du die Logik implementieren, um den Gewinner der Runde zu bestimmen.
-        // Dazu könntest du die Kartenwerte der verbleibenden Spieler vergleichen.
 
-        // Zum Beispiel:
-        Player roundWinner = null;
-        int maxScore = 0;
-        int remainingPlayers = 0;
 
-        for (Player player : players) {
-            // Überprüfe, ob der Spieler noch im Spiel ist (nicht ausgeschieden)
-            if (!player.isEliminated()) {
-                remainingPlayers++;
-                int playerScore = calculatePlayerScore(player);
-                if (playerScore > maxScore) {
-                    maxScore = playerScore;
-                    roundWinner = player;
-                }
-            }
-        }
 
-        // Wenn nur noch ein Spieler übrig ist, wird dieser als Gewinner der Runde betrachtet
-        if (remainingPlayers == 1) {
-            roundWinner = players.stream().filter(player -> !player.isEliminated()).findFirst().orElse(null);
-        }
 
         return roundWinner;
     }
@@ -335,7 +312,6 @@ public class Round {
         // Speichere die ursprüngliche Reihenfolge der Spieler
         //List<Player> originalOrder = new ArrayList<>(players);
 
-        // Hier kannst du die Spieler für die nächste Runde vorbereiten, z.B. ihre Hände leeren.
         for (Player player : players) {
             player.clearHand();
             List<Card> playerPlayedCards = player.getPlayedCards();
@@ -345,7 +321,7 @@ public class Round {
             player.setEliminated(false);
         }
 
-        // Erstelle eine neue Liste für die Spieler in der Reihenfolge der nächsten Runde
+
         /*List<Player> newOrder = new ArrayList<>();
 
         // Füge den Gewinner der letzten Runde an erste Stelle

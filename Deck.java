@@ -1,7 +1,6 @@
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
-
 /**
  * Die Deck-Klasse repräsentiert ein virtuelles Kartendeck.
  */
