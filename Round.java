@@ -290,9 +290,6 @@ public class Round {
         return roundWinner;
     }
 
-    private int calculatePlayerScore(Player player) {
-        // Hier kannst du die Logik implementieren, um den Punktestand eines Spielers basierend auf seinen Karten zu berechnen.
-        // Du kannst die Karten in seiner Hand durchgehen und ihre Werte addieren.
 
         int score = 0;
         for (Card card : player.getHand()) {
