@@ -4,7 +4,7 @@ import java.util.List;
 /**
  * Player Klasse die alle wichtigen Attribute und Methoden für einen einzelnen Spieler enthält.
  */
-class Player {
+public class Player {
     private String name;
     private int daysUntilLastDate;
     private int score;

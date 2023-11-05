@@ -5,7 +5,7 @@ import java.util.Collections;
 /**
  * Die Deck-Klasse repräsentiert ein virtuelles Kartendeck.
  */
- class Deck {
+ public class Deck {
     private List<Card> cards;
 
     /**

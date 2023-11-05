@@ -7,7 +7,7 @@ import java.util.Comparator;
 /**
  * Die Round-Klasse repräsentiert die virtuelle Runde.
  */
-class Round {
+public class Round {
     private static Deck deck;
     private static List<Player> players;
     private static int currentPlayerIndex;
