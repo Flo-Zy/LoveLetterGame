@@ -1,5 +1,12 @@
 # Love Letter
-
+### Wichtiges zum Spiel
+- Geduldig sein mit der Eingabe. Das Spiel wurde so entwickelt, dass die Ausgaben nicht direkt kommen
+- \playcard sollte nie ausgeführt werden, wenn nicht davor mit \start eine Runde initialisiert wurde.
+- \start nur zum Initialisieren einer neun Runde verwenden, also ganz am Anfang und wenn die Runde abgeschlossen wurde und die neue beginnt.
+- \start nicht während der laufenden Runde verwenden. 
+- Ganz wichtig, dass die neue Runde mit \start angefangen wird und nicht mit \playcard,
+- Wen ein Spieler ausgeschieden wurde dann trotzdem \playcard verwenden. Das Programm erkennt dann automatisch, dass du ausgeschieden bist.
+- Denk daran! Wenn du die Gräfin mit einem König oder Prinzen in der Hand hast, so musst du die Gräfin spielen.
 ### Project description
 Preliminary project for the software development internship in the winter semester 2023-2024.
 ### About the game

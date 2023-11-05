@@ -3,32 +3,53 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Comparator;
 
+/**
+ *Primäre Klasse des Spiels LoveLetter.
+ */
 public class LoveLetterGame {
     private static List<Player> players;
     private int AnzahlDerPlayer;
     private static Round round;
 
+    /**
+     * Konstruktor, der Spielerzahl nimmt und die Liste der Spieler initialisiert.
+     */
     public LoveLetterGame() {
         players = new ArrayList<>();
         AnzahlDerPlayer = 0;
     }
 
+    /**
+     * Nimmt die Spieler für das Spiel.
+     *
+     * @param name Name des Spielers.
+     * @param daysUntilLastDate Tage seit dem letzten Date. Wichtig für die Spielerreihenfolge.
+     */
     public void addPlayer(String name, int daysUntilLastDate) {
         players.add(new Player(name, daysUntilLastDate));
     }
 
+    /**
+     * Startet und initialisiert eine neue Runde.
+     */
     public void startGame() {
         //Spiel wird gestartet
         System.out.println("Spiel wird gestartet......");
-        round = new Round (new Deck(), players);
+        round = new Round(new Deck(), players);
         round.startRound();
     }
 
+    /**
+     * Führt die Rundenlogik für das Spielen eines Kartenzuges aus.
+     */
     public void playCard() {
         round.playRound();
         //Karte wird gespielt
     }
 
+    /**
+     * Zeigt die Karte, die der Spieler gerade in der Hand hält.
+     */
     public void showHand() {
         Player currentPlayer = players.get(round.getCurrentPlayerIndex());
         System.out.println(currentPlayer.getName() + "'s Hand:");
@@ -38,6 +59,9 @@ public class LoveLetterGame {
         }
     }
 
+    /**
+     * Der aktuelle Punktestand der Spieler wird angezeigt.
+     */
     public void showScore() {
         System.out.println("Punktestand der Spieler:");
         for (Player player : players) {
@@ -45,6 +69,9 @@ public class LoveLetterGame {
         }
     }
 
+    /**
+     * Spieler und deren aktueller Status werden angezeigt.
+     */
     public void showPlayers() {
         System.out.println("Spielerübersicht:");
         for (Player player : players) {
@@ -53,6 +80,12 @@ public class LoveLetterGame {
         }
     }
 
+    /**
+     * Main-Methode des Spiels mit einer Spieler-Initialisierung und
+     * Endlosschleife für das Eingeben der wichtigen Spielbefehle.
+     *
+     * @param args
+     */
     public static void main(String[] args) {
         try {
             LoveLetterGame game = new LoveLetterGame();
@@ -79,11 +112,22 @@ public class LoveLetterGame {
             } while (AnzahlDerPlayer < 2 || AnzahlDerPlayer > 4);
 
             for (int i = 0; i < AnzahlDerPlayer; i++) {
-                System.out.print("Name von Spieler Nr." + (i + 1) + ":    ");
+                System.out.print("Name von Spieler Nr." + (i + 1) + ": ");
                 String playerName = scanner.nextLine();
-                System.out.print( playerName + ", vor wie vielen Tagen hattest du dein letztes Date ? :    ");
-                int daysUntilLastDate = scanner.nextInt();
-                scanner.nextLine();
+
+                int daysUntilLastDate = 0;
+                boolean validInput = false;
+
+                while (!validInput) {
+                    System.out.print(playerName + "vor wie vielen Tagen hattest du dein letztes Date ? :   ");
+                    String tage = scanner.nextLine();
+                    try {
+                        daysUntilLastDate = Integer.parseInt(tage);
+                        validInput = true;
+                    } catch (NumberFormatException e) {
+                        System.out.println("Ungültige Eingabe. Bitte gib eine ganze Zahl ein.");
+                    }
+                }
                 game.addPlayer(playerName, daysUntilLastDate);
             }
             players.sort(Comparator.comparing(Player::getDaysUntilLastDate));

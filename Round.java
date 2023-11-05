@@ -4,7 +4,9 @@ import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-
+/**
+ * Die Round-Klasse repräsentiert die virtuelle Runde.
+ */
 class Round {
     private static Deck deck;
     private static List<Player> players;
@@ -12,16 +14,23 @@ class Round {
     private Scanner scanner;
     private static List<Card> asideCards;
     private Player roundWinner;
-
+    /**
+     * Konstruktor.
+     *
+     * @param deck Das Spieldeck.
+     * @param players Die Liste der Spieler
+     */
     public Round(Deck deck, List<Player> players) {
         this.deck = deck;
         this.players = players;
-        currentPlayerIndex = 0;
+        //currentPlayerIndex = 0;
         scanner = new Scanner(System.in);
         asideCards = new ArrayList<>();
         roundWinner = null;
     }
-
+    /**
+     *  Startet eine neue Spielrunde. Das Deck wird gemischt und es werden Karten an die Spieler verteilt.
+     */
     public static void startRound() {
         deck.shuffle();
         int asideCardCount = players.size() == 2 ? 3 : 1;
@@ -48,12 +57,14 @@ class Round {
             }
         }
         System.out.println("Du kannst diese Karten jederzeit mit \\showAsideCards anzeigen.");
-        Player firstPlayer = players.get(currentPlayerIndex);
-        System.out.println(firstPlayer.getName() + ",du kannst nun mit \\playcard deinen Spielzug ausführen");
+        //Player firstPlayer = players.get(currentPlayerIndex);
+        System.out.println("Du kannst nun mit \\playcard den ersten Spielzug ausführen");
     }
-
+    /**
+     * Entscheidet, ob ein neuer Spielzug ausgeführt werden darf oder nicht.
+     */
     public void playRound() {
-        while (!deck.isEmpty() && !allPlayersButOneEliminated()) {
+        while (!deck.isEmpty() || !allPlayersButOneEliminated()) {
             playTurn();
             if (!deck.isEmpty() || !allPlayersButOneEliminated()) {
                 currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
@@ -65,7 +76,9 @@ class Round {
         }
         endRound();
     }
-
+    /**
+     * Führt den Spielzug des aktuellen Spielers aus. Karte ziehen, Spieler wählen und Karte ausspielen.
+     */
     public void playTurn() {
         try {
             while (true) {
@@ -130,7 +143,7 @@ class Round {
                     Card selectedCard = hand.get(chosenCardIndex - 1);
 
                     // Führe die Aktion der ausgewählten Karte aus (performEffect)
-                    selectedCard.performEffect(currentPlayer, players);
+                    selectedCard.performEffect(currentPlayer, players, deck);
 
                     // Entferne die ausgespielte Karte aus der Hand des Spielers
                     hand.remove(chosenCardIndex - 1);
@@ -166,7 +179,9 @@ class Round {
             System.out.println("Ein Fehler ist aufgetreten: " + e.getMessage());
         }
     }
-
+    /**
+     * Beendet die aktuelle Runde und ermittelt den Sieger der Runde.
+     */
     private void endRound() {
         if (players.stream().filter(player -> !player.isEliminated()).count() == 1) {
             // Es gibt nur einen nicht eliminierten Spieler, dieser ist der Gewinner
@@ -187,6 +202,7 @@ class Round {
             }
             // Bereite die Spieler für die nächste Runde vor
             prepareForNextRound();
+            currentPlayerIndex = players.indexOf(roundWinner);
         } else if (deck.isEmpty()) {
             // Das Deck ist leer, vergleiche die Karten der Spieler
             Player roundWinner = determineRoundWinnerByCards();
@@ -196,18 +212,25 @@ class Round {
 
             // Zeige den Gewinner und den aktuellen Punktestand an
             System.out.println("Runde beendet! " + roundWinner.getName() + " gewinnt diese Runde.");
+            System.out.println("-------------------------");
             for (Player player : players) {
                 System.out.println(player.getName() + ": " + player.getScore() + " Punkt(e)");
             }
+            System.out.println("-------------------------");
             if (checkScoreCondition()) {
                 endGame(); // Das Spiel beenden
                 return; // Beende die Methode
             }
             // Bereite die Spieler für die nächste Runde vor
             prepareForNextRound();
+            currentPlayerIndex = players.indexOf(roundWinner);
         }
     }
-
+    /**
+     * Ermittelt den Sieger der aktuellen Runde basierend der Kartenwerte.
+     *
+     * @return Rundensieger oder null, bei unentschieden.
+     */
     private Player determineRoundWinnerByCards() {
         // Implementiere die Logik zur Gewinnerermittlung basierend auf den Kartenwerten der Spieler
         // Zum Beispiel: Vergleiche die Summe der Kartenwerte in den Händen der Spieler
@@ -229,6 +252,11 @@ class Round {
         return roundWinner;
     }
 
+    /**
+     * Überprüft, ob genug Punkte für das Gewinnen des kompletten Spiels erreicht wurden.
+     *
+     * @return true, wenn ein Spieler genug Punkte erreicht sonst false.
+     */
     private boolean checkScoreCondition() {
         int playerCount = players.size();
         int requiredScore;
@@ -297,6 +325,10 @@ class Round {
         return score;
     }*/
 
+    /**
+     * Setzt die Runde zurück. Hände werden geleert, Karten werden zurückgelegt und sämtliche
+     * Status werden zurückgestellt.
+     */
     private void prepareForNextRound() {
         Player roundWinner = determineRoundWinnerByCards();
 
@@ -331,13 +363,15 @@ class Round {
 
         deck.addAsideCards(asideCards);
         asideCards.clear();
-        if (roundWinner != null) {
-            currentPlayerIndex = players.indexOf(roundWinner);
-        }
+        //currentPlayerIndex = players.indexOf(roundWinner);
+        System.out.println("------------------------------------------");
         System.out.println("\\start um mit der neuen Runde zu beginnen.");
+        System.out.println("------------------------------------------");
         return;
     }
-
+    /**
+     *Zeigt die Karten, die am Rundenanfang weggelegt wurden.
+     */
     public void showAsideCards() {
         if (asideCards.size() > 0) {
             System.out.println("Beiseite gelegte Karten:");
@@ -348,7 +382,11 @@ class Round {
             System.out.println("Es wurden keine Karten beiseite gelegt.");
         }
     }
-
+    /**
+     * Überprüft ob nurnoch ein Spieler den Status eliminated nicht hat.
+     *
+     * @return true, wenn nur noch ein Spieler übrig ist, sonst false.
+     */
     private boolean allPlayersButOneEliminated() {
         int activePlayersCount = 0;
         for (Player player : players) {
@@ -358,22 +396,25 @@ class Round {
         }
         return activePlayersCount == 1;
     }
-
+    /**
+     * Gibt den Index des aktuellen Spielers
+     *
+     * @return Index des Spielers.
+     */
     public int getCurrentPlayerIndex() {
         return currentPlayerIndex;
     }
-
+    /**
+     * Beendet das gesamte Spiel und ermittelt den Gesamtsieger basierend der Scorepunkte.
+     */
     private void endGame() {
         try {
-            System.out.println("Das Spiel ist beendet.");
-
-
             // Finde den Spieler mit den meisten Punkten (Gesamtsieger)
             Player gameWinner = players.stream().max(Comparator.comparing(Player::getScore)).orElse(null);
             Thread.sleep(2500);
             if (gameWinner != null) {
                 System.out.println("-----------------Glückwunsch-------------------");
-                System.out.println("       Gesamtsieger: " + gameWinner.getName() + " mit " + gameWinner.getScore() + " Punkten.");
+                System.out.println("       Gesamtsieger: " + gameWinner.getName() + " mit " + gameWinner.getScore() + " Punkten");
                 System.out.println("-----------------------------------------------");
             } else {
                 System.out.println("Unentschieden!");
